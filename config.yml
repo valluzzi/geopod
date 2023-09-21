@@ -107,3 +107,13 @@ resources:
         type: process
         processor:
             name: HelloWorld
+
+    silly-process:
+        type: process
+        processor:
+            name: process.SillyProcessProcessor
+
+    k8s-process:
+        type: process
+        processor:
+            name: process.KubernetesProcessProcessor
