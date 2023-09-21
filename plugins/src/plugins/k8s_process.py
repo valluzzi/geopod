@@ -29,9 +29,9 @@
 
 # curl -X POST -H "Content-Type: application/json" -d"{}"  http://localhost:5000/processes/k8s-process/execution
 
-import logging, time
-
-from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
+import logging
+from .utils.kubernetes import k8s_execute
+from pygeoapi.process.base import BaseProcessor,ProcessorExecuteError
 
 
 LOGGER = logging.getLogger(__name__)
@@ -61,6 +61,20 @@ PROCESS_METADATA = {
         'href': 'https://example.org/process',
         'hreflang': 'en-US'
     }],
+    'inputs': {
+        'name': {
+            'title': 'Name',
+            'description': 'The name of the person or entity that you wish to'
+                           'be echoed back as an output',
+            'schema': {
+                'type': 'string'
+            },
+            'minOccurs': 1,
+            'maxOccurs': 1,
+            'metadata': None,  # TODO how to use?
+            'keywords': ['full name', 'personal']
+        }
+    },
     'outputs': {
         'echo': {
             'title': 'Silly Process Echo',
@@ -73,6 +87,9 @@ PROCESS_METADATA = {
         }
     },
     'example': {
+        'inputs': {
+            'model': 'gdalinfo'
+        }
     }
 }
 
@@ -93,17 +110,48 @@ class KubernetesProcessProcessor(BaseProcessor):
 
         super().__init__(processor_def, PROCESS_METADATA)
 
+    def check_inputs(self, data):
+        """
+        check inputs validity
+        """
+        if 'name' not in data:
+            return False
+        if not data['name']:
+            return False
+        return True
+    
 
     def execute(self, data):
+        """
+        execute process
+        """
+        if self.check_inputs(data) or True:
 
-        mimetype = 'application/json'
-                    
-        outputs = {
-            'id': 'k8s-process',
-            'value': "Hello world!"
-        }
+            model = data['name']
 
-        return mimetype, outputs
+            # outputs = k8s_execute(model)
+
+            # if outputs["status"] != "Completed":
+            #     print(outputs["message"])
+            #     raise ProcessorExecuteError(outputs["message"])
+
+            try:
+                outputs = k8s_execute(model)
+            except Exception as ex:
+                outputs = {
+                    'id': self.name,
+                    'value': f"***Error:{ex}"
+                }
+            # outputs = {
+            #     'id': self.name,
+            #     'value': model
+            # }
+
+            mimetype = 'application/json'
+            return mimetype, outputs
+        else:
+            print("1b)")
+            raise ProcessorExecuteError('Missing command parameter')
 
     def __repr__(self):
         return f'<KubernetesProcessProcessor> {self.name}'

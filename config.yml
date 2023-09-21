@@ -111,9 +111,9 @@ resources:
     silly-process:
         type: process
         processor:
-            name: process.SillyProcessProcessor
+            name: plugins.SillyProcessProcessor
 
     k8s-process:
         type: process
         processor:
-            name: process.KubernetesProcessProcessor
+            name: plugins.KubernetesProcessProcessor

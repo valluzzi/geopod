@@ -1,7 +1,7 @@
 import setuptools
 
 VERSION = "0.1.0"
-PACKAGE_NAME = "process"
+PACKAGE_NAME = "plugins"
 AUTHOR = "Valerio Luzzi, Marco Renzi"
 EMAIL = "valerio.luzzi@gecosistema.com, marco.renzi@gecosistema.com"
 GITHUB = f"https://github.com/valluzzi/{PACKAGE_NAME}.git"
@@ -23,5 +23,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=["pygeoapi"]
+    install_requires=["pygeoapi", "kubernetes"]
 )
